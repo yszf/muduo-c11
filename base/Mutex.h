@@ -11,12 +11,16 @@ namespace muduo {
     class MutexLock : noncopyable {
     public:
         MutexLock() : holder_(0) {
-            pthread_mutex_init(&mutex_, nullptr);
+            int ret = pthread_mutex_init(&mutex_, nullptr);
+            assert(0 == ret);
+            (void) ret;
         }
 
         ~MutexLock() {
             assert(holder_ == 0);
-            pthread_mutex_destroy(&mutex_);
+            int ret = pthread_mutex_destroy(&mutex_);
+            assert(0 == ret);
+            (void) ret;
         }
 
         bool isLockedByThisThread() const {
@@ -55,7 +59,7 @@ namespace muduo {
             }
         private:
             MutexLock& owner_;
-        }; // UnassignGuard
+        }; // class UnassignGuard
 
         void unassignHolder() {
             holder_ = 0;
@@ -68,7 +72,7 @@ namespace muduo {
         pthread_mutex_t     mutex_;
         pid_t               holder_;
 
-    }; // MutexLock 
+    }; // class MutexLock 
 
     class MutexLockGuard : noncopyable {
     public:
@@ -81,7 +85,7 @@ namespace muduo {
         }
     private:
         MutexLock& mutex_;
-    }; // MutexLockGuard
+    }; // class MutexLockGuard
 
 
 } // namespace muduo

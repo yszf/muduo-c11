@@ -4,6 +4,7 @@
 #include "muduo-c11/base/Types.h"
 #include "muduo-c11/base/noncopyable.h"
 #include "muduo-c11/base/Atomic.h"
+#include "muduo-c11/base/CountDownLatch.h"
 #include <pthread.h>
 #include <functional>
 
@@ -44,9 +45,10 @@ namespace muduo {
         pid_t       tid_;
         ThreadFunc  func_;
         string      name_;
+        CountDownLatch latch_;
 
         static AtomicInt32 numCreated_;
-    };
+    }; // class Thread
 
 } // namespace muduo
 

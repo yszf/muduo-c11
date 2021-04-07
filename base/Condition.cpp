@@ -1,0 +1,20 @@
+#include "muduo-c11/base/Condition.h"
+
+namespace muduo {
+
+    bool Condition::waitForSeconds(double seconds) {
+        struct timespec abstime;
+        clock_gettime(CLOCK_REALTIME, &abstime);
+
+        const int64_t kNanosecondsPerSecond = 1000000000;
+        int64_t nanoseconds = static_cast<int64_t>(seconds * kNanosecondsPerSecond);
+
+        abstime.tv_sec += static_cast<time_t>((abstime.tv_nsec + nanoseconds) / kNanosecondsPerSecond);
+
+        abstime.tv_nsec = static_cast<long>((abstime.tv_nsec + nanoseconds) % kNanosecondsPerSecond);
+
+        MutexLock::UnassignGuard ug(mutex_);
+        return ETIMEDOUT == pthread_cond_timedwait(&pcond_, mutex_.getPthreadMutex(), &abstime);
+    }
+
+}
