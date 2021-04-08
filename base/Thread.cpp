@@ -1,9 +1,11 @@
 #include "muduo-c11/base/Thread.h"
+#include "muduo-c11/base/CurrentThread.h"
 #include "muduo-c11/base/Exception.h"
 #include <unistd.h>
 #include <sys/syscall.h>
 #include <sys/prctl.h>
 #include <stdio.h>
+#include <iostream>
 
 namespace muduo {
 
@@ -123,7 +125,7 @@ namespace muduo {
     }
 
     Thread::~Thread() {
-        if (started && !joined_) {
+        if (started_ && !joined_) {
             pthread_detach(pthreadId_);
         }
     }
@@ -144,6 +146,7 @@ namespace muduo {
         detail::ThreadData* data = new detail::ThreadData(func_, name_, &tid_, &latch_);
 
         if (pthread_create(&pthreadId_, nullptr, &detail::startThread, data)) {
+            std::cout << "failed in pthread_create!" << std::endl;
             started_ = false;
             delete data;
         }

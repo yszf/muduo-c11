@@ -2,8 +2,11 @@
 #define MUDUO_BASE_SIGLETON_H
 
 #include "muduo-c11/base/noncopyable.h"
+#include "muduo-c11/base/Types.h"
 
 #include <pthread.h>
+#include <assert.h>
+#include <stdlib.h> // atexit
 
 namespace muduo {
 
@@ -25,22 +28,20 @@ namespace muduo {
         ~Singleton() = delete;
 
         static T& instance() {
-            // pthread_once实现了对象的唯一
             pthread_once(&ponce_, &Singleton::init);
+            assert(value_ != nullptr);
             return *value_;
         }
 
     private:
         static void init() {
             value_ = new T();
-            // 编译时检测T中是否有no_destroy方法
             if (!detail::has_no_destroy<T>::value) {
                 ::atexit(destroy);
             }
         }
 
         static void destroy() {
-            // 编译时检测T是否完整类型
             typedef char T_must_be_complete_type[sizeof(T) == 0 ? -1 : 1];
             T_must_be_complete_type dummy; (void) dummy;
 
