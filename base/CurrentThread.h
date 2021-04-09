@@ -18,7 +18,7 @@ namespace muduo {
 
         void sleepUsec(int64_t usec);
 
-        string statckTrace(bool demangle);
+        string stackTrace(bool demangle);
 
         inline int tid() {
             //  if (value) 等价于 if (__builtin_expert(value, x)),与x的值无关.

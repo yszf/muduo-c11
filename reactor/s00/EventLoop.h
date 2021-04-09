@@ -1,5 +1,5 @@
-#ifndef MUDUO_BASE_EVENTLOOP_H
-#define MUDUO_BASE_EVENTLOOP_H
+#ifndef MUDUO_REACTOR_EVENTLOOP_H
+#define MUDUO_REACTOR_EVENTLOOP_H
 
 #include "muduo-c11/base/Thread.h"
 #include "muduo-c11/base/noncopyable.h"
@@ -33,4 +33,4 @@ namespace muduo {
 } // namespace muduo
 
 
-#endif // MUDUO_BASE_EVENTLOOP_H
+#endif // MUDUO_REACTOR_EVENTLOOP_H

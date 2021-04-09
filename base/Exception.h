@@ -8,10 +8,10 @@ namespace muduo {
 
     class Exception : public std::exception {
         public:
-            Exception(string msg);
-            ~Exception() noexcept override = default;
+            explicit Exception(string msg);
+            virtual ~Exception() noexcept override = default;
 
-            const char* what() const noexcept override {
+            virtual const char* what() const noexcept override {
                 return message_.c_str();
             }
 

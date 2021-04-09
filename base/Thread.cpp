@@ -59,6 +59,9 @@ namespace muduo {
 
                 ::prctl(PR_SET_NAME, CurrentThread::t_threadName);
                 try {
+                    if (nullptr == func_) {
+                        throw muduo::Exception("have not threadFunction");
+                    }
                     func_();
                     CurrentThread::t_threadName = "finished";
                 }
