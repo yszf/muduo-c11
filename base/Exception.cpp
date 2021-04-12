@@ -5,10 +5,10 @@
 
 namespace muduo {
 
-    Exception::Exception(string msg) 
+    Exception::Exception(const char* msg) 
         : message_(msg), 
         stack_(CurrentThread::stackTrace(false)) {
         std::cout << "Exception construct" << std::endl;
-    } 
+    }
 
-} // namespace muduo
+}

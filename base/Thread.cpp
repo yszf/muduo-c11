@@ -60,7 +60,7 @@ namespace muduo {
                 ::prctl(PR_SET_NAME, CurrentThread::t_threadName);
                 try {
                     if (nullptr == func_) {
-                        throw muduo::Exception("have not threadFunction");
+                        throw Exception("have not threadFunc");
                     }
                     func_();
                     CurrentThread::t_threadName = "finished";
@@ -147,7 +147,6 @@ namespace muduo {
         started_ = true;
 
         detail::ThreadData* data = new detail::ThreadData(func_, name_, &tid_, &latch_);
-
         if (pthread_create(&pthreadId_, nullptr, &detail::startThread, data)) {
             std::cout << "failed in pthread_create!" << std::endl;
             started_ = false;

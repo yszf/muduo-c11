@@ -16,7 +16,7 @@ int main() {
 
     muduo::EventLoop loop;
 
-    muduo::Thread thread(nullptr);
+    muduo::Thread thread(threadFunc);
     thread.start();
 
     loop.loop();

@@ -7,29 +7,29 @@
 using namespace muduo;
 
 const int Channel::kNoneEvent = 0;
-const int Channel::kReadEvent = POLLIN | POLLPRI;
+const int Channel::kReadEvent = POLLIN | POLLPRI; 
 const int Channel::kWriteEvent = POLLOUT;
 
-Channel::Channel(EventLoop* loop, int fd) : 
-    ownerLoop_(loop),
+Channel::Channel(EventLoop* loop, int fd) 
+    : loop_(loop),
     fd_(fd),
     events_(0),
     revents_(0),
-    index_(-1) {}
+    index_(-1) {
 
-Channel::~Channel() {}
+}
 
 void Channel::update() {
-    ownerLoop_->updateChannel(this);
+    loop_->updateChannel(this);
 }
 
 void Channel::handleEvent() {
     if (revents_ & POLLNVAL) {
-        std::cout << "warn:[Channel::handleEvent] Channel::handleEvent() POLLNVAL" << std::endl;
+        std::cout << "[Channel::handleEvent] warn: Channel::handle_event() POLLNAVL" << std::endl;
     }
     
     if (revents_ & (POLLERR | POLLNVAL)) {
-        if (errorCallback_) errorCallback_();
+        if(errorCallback_) errorCallback_();
     }
 
     if (revents_ & (POLLIN | POLLPRI | POLLRDHUP)) {
