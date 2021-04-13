@@ -41,7 +41,7 @@ void EventLoop::loop() {
     looping_ = true;
     quit_ = false;
 
-    while(!quit) {
+    while(!quit_) {
         activeChannels_.clear();
         pollReturnTime_ = poller_->poll(kPollTimeMs, &activeChannels_);
         for (ChannelList::iterator it = activeChannels_.begin(); it != activeChannels_.end(); ++it) {

@@ -37,6 +37,8 @@ namespace muduo {
         // reset repeat timer from expired timers
         void reset(const std::vector<Entry>& expired, Timestamp now);
 
+        bool insert(Timer* timer);
+
         EventLoop* loop_;
         const int timerfd_;
         Channel timerfdChannel_;
