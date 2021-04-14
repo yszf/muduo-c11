@@ -6,6 +6,7 @@
 #include "muduo-c11/base/Timestamp.h"
 #include "muduo-c11/base/Mutex.h"
 #include "Callbacks.h"
+#include "TimerId.h"
 
 #include <vector>
 #include <memory>
@@ -38,11 +39,11 @@ namespace muduo {
             return threadId_ == CurrentThread::tid();
         }
 
-        void runAt(Timestamp when, TimerCallback& cb);
+        TimerId runAt(const Timestamp& time, const TimerCallback& cb);
 
-        void runAfter(double delay, TimerCallback& cb);
+        TimerId runAfter(double delay, const TimerCallback& cb);
 
-        void runEvery(int interval, TimerCallback& cb);
+        TimerId runEvery(double interval, const TimerCallback& cb);
 
         // Time when poll returns, usually means data arrival
         Timestamp pollReturnTime() const{
@@ -61,11 +62,10 @@ namespace muduo {
 
         void wakeup();
 
-
     private:
-        void abortNotInLoopThread();
         void handleRead(); // waked up
         void doPendingFunctors();
+        void abortNotInLoopThread();
 
         typedef std::vector<Channel*> ChannelList;
 

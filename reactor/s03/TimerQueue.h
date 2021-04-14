@@ -2,6 +2,7 @@
 #define MUDUO_REACTOR_TIMERQUEUE_H
 
 #include "muduo-c11/base/noncopyable.h"
+#include "Callbacks.h"
 #include "Channel.h"
 
 #include <vector>
@@ -10,15 +11,15 @@
 namespace muduo {
 
     class EventLoop;
-    class Timestamp;
     class Timer;
     class TimerId;
+    class Timestamp;
     class TimerQueue : noncopyable {
     public:
         TimerQueue(EventLoop* loop);
         ~TimerQueue();
 
-        TimerId addTimer(const TimerCallback& cb, Timerstamp when, double interval);
+        TimerId addTimer(const TimerCallback& cb, Timestamp when, double interval);
 
     private:
         // FIXME: use unique_ptr<Timer> instead of raw pointer
@@ -37,7 +38,7 @@ namespace muduo {
 
         EventLoop* loop_;
         const int timerfd_;
-        Channel timerChannel_;
+        Channel timerfdChannel_;
         // Timer list sorted by expiration
         TimerList timers_;
 

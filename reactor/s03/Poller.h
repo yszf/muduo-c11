@@ -12,6 +12,7 @@ namespace muduo {
 
     class EventLoop;
     class Channel;
+    class Timestamp;
     class Poller : noncopyable {
     public:
         typedef std::vector<Channel*> ChannelList;
