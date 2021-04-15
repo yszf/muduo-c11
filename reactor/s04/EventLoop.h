@@ -14,7 +14,6 @@
 namespace muduo {
 
     class Poller;
-    class Channel;
     class TimerQueue;
     class TimerId;
     class Timestamp;
@@ -27,6 +26,8 @@ namespace muduo {
 
         void loop();
 
+        void quit();
+
         void updateChannel(Channel* channel);
 
         TimerId runAt(const Timestamp& time, const TimerCallback& cb);
@@ -35,9 +36,11 @@ namespace muduo {
 
         TimerId runEvery(double interval, const TimerCallback& cb);
 
-        void runInLoop();
+        void runInLoop(const Functor& cb);
 
-        void queueInLoop();
+        void queueInLoop(const Functor& cb);
+
+        void wakeup();
 
         void assertInLoopThread() {
             if (!isInLoopThread()) {
@@ -50,22 +53,23 @@ namespace muduo {
         }
     private:
         void handleRead();
+        void doPendingFunctors();
         void abortNotInLoopThread();
-        void callPendingFunctors();
 
         typedef std::vector<Channel*> ChannelList;
 
         bool looping_;
         bool quit_;
-        bool callPendingFunctor_;
+        bool callingPendingFunctors_;
         pid_t threadId_;
-        std::vector<Functor> functors_;
+        Timestamp pollReturnTime_;
         ChannelList activeChannels_;
         std::unique_ptr<Poller> poller_;
         std::unique_ptr<TimerQueue> timerQueue_;
-        Channel wakeupChannel_;
+        std::unique_ptr<Channel> wakeupChannel_;
         int wakeupFd_;
         MutexLock mutex_;
+        std::vector<Functor> pendingFunctors_;
 
     }; // class EventLoop
 

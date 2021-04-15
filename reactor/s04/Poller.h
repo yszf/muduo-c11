@@ -24,9 +24,10 @@ namespace muduo {
 
         void updateChannel(Channel* channel);
 
-        EventLoop* ownerEventLoop() const {
-            return loop_;
+        void assertInLoopThread() {
+            loop_->assertInLoopThread();
         }
+
     private:
         void fillActiveChannels(int numEvents, ChannelList* activeChannels);
 

@@ -37,15 +37,15 @@ namespace muduo {
             index_ = idx;
         }
 
-        void set_readCallback(const EventCallback& cb) {
+        void setReadCallback(const EventCallback& cb) {
             readCallback_ = cb;
         }
 
-        void set_writeCallback(const EventCallback& cb) {
+        void setWriteCallback(const EventCallback& cb) {
             writeCallback_ = cb;
         }
 
-        void set_errorCallback(const EventCallback& cb) {
+        void setErrorCallback(const EventCallback& cb) {
             errorCallback_ = cb;
         }
 
@@ -64,9 +64,17 @@ namespace muduo {
             update();
         }
 
-        void disableAllEvent() {
+        void disableAll() {
             events_ = kNoneEvent;
             update();
+        }
+
+        bool isNoneEvent() {
+            return events_ == kNoneEvent;
+        }
+
+        EventLoop* ownerLoop() { 
+            return loop_;
         }
 
     private:
@@ -77,7 +85,7 @@ namespace muduo {
         static const int kWriteEvent;
 
         EventLoop* loop_;
-        int fd_;
+        const int fd_;
         int events_;
         int revents_;
         int index_;

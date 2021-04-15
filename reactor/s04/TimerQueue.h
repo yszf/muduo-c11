@@ -21,22 +21,21 @@ namespace muduo {
 
         TimerId addTimer(const TimerCallback& cb, Timestamp when, double interval);
 
-        void reset(Timestamp now);
-
     private:
         typedef std::pair<Timestamp, Timer*> Entry;
         typedef std::set<Entry> TimerList;
 
+        void addTimerInLoop(Timer* timer);
         void handleRead();
         std::vector<Entry> getExpired(Timestamp now);
+        void reset(const std::vector<Entry>& expired, Timestamp now);
+
+        bool insert(Timer* timer);
 
         EventLoop* loop_;
         TimerList timers_;
         Channel timerChannel_;
-        int timerfd_;
-        Timestamp expiration_;
-        const double interval_;
-        bool repeat_;
+        const int timerfd_;
 
     }; // class TimerQueue
 
