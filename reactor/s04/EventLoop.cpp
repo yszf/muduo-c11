@@ -1,16 +1,25 @@
 #include "EventLoop.h"
+#include "Channel.h"
 #include "Poller.h"
 #include "TimerQueue.h"
-#include "TimerId.h"
-#include "muduo-c11/base/Timestamp.h"
 
 #include <unistd.h>
+#include <sys/eventfd.h>
 #include <iostream>
 
 using namespace muduo;
 
 __thread EventLoop* t_loopInThisThread = nullptr;
 const int kPollTimeMs = 10000;
+
+static int createEventfd() {
+    int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    if (evtfd < 0) {
+        std::cout << "[createEventfd]: syserr: Failed in eventfd" << std::endl;
+        abort();
+    }
+    return evtfd;
+}
 
 EventLoop::EventLoop() 
     : looping_(false), 
@@ -19,9 +28,10 @@ EventLoop::EventLoop()
     threadId_(CurrentThread::tid()),
     poller_(new Poller(this)),
     timerQueue_(new TimerQueue(this)),
-    wakeupFd_(0),
+    wakeupFd_(createEventfd()),
     wakeupChannel_(new Channel(this, wakeupFd_)) {
-    std::cout << "EventLoop " << this << " creates in thread " << threadId_ << threadId_ << std::endl;
+
+    std::cout << "EventLoop " << this << " creates in thread " << threadId_ << std::endl;
     if (t_loopInThisThread) {
         std::cout << "[EventLoop::EventLoop] fatal: Another loop " << t_loopInThisThread << " was created in this thread " << threadId_ <<  std::endl;
         assert(false);
@@ -59,47 +69,11 @@ void EventLoop::loop() {
     looping_ = false;
 }
 
-void EventLoop::doPendingFunctors() {
-    std::vector<Functor> functors;
-    callingPendingFunctors_ = true;
-
-    {
-        MutexLockGuard lock(mutex_);
-        functors.swap(pendingFunctors_);
-    }
-
-    for (size_t i = 0; i < functors.size(); ++i) {
-        functors[i]();
-    }
-
-    callingPendingFunctors_ = false;
-}
-
 void EventLoop::quit() {
     quit_ = true;
     if (!isInLoopThread()) {
         wakeup();
     }
-}
-
-void EventLoop::updateChannel(Channel* channel) {
-    assert(channel->ownerLoop() == this);
-    assertInLoopThread();
-    poller_->updateChannel(channel);
-}
-
-TimerId EventLoop::runAt(const Timestamp& time, const TimerCallback& cb) {
-    return timerQueue_->addTimer(cb, time, 0.0);
-}
-
-TimerId EventLoop::runAfter(double delay, const TimerCallback& cb) {
-    Timestamp time(addTime(Timestamp::now(), delay));
-    return runAt(time, cb);
-}
-
-TimerId EventLoop::runEvery(double interval, const TimerCallback& cb) {
-    Timestamp time(addTime(Timestamp::now(), interval));
-    return timerQueue_->addTimer(cb, time, interval);
 }
 
 void EventLoop::runInLoop(const Functor& cb) {
@@ -122,6 +96,31 @@ void EventLoop::queueInLoop(const Functor& cb) {
     }
 }
 
+TimerId EventLoop::runAt(const Timestamp& time, const TimerCallback& cb) {
+    return timerQueue_->addTimer(cb, time, 0.0);
+}
+
+TimerId EventLoop::runAfter(double delay, const TimerCallback& cb) {
+    Timestamp time(addTime(Timestamp::now(), delay));
+    return runAt(time, cb);
+}
+
+TimerId EventLoop::runEvery(double interval, const TimerCallback& cb) {
+    Timestamp time(addTime(Timestamp::now(), interval));
+    return timerQueue_->addTimer(cb, time, interval);
+}
+
+void EventLoop::updateChannel(Channel* channel) {
+    assert(channel->ownerLoop() == this);
+    assertInLoopThread();
+    poller_->updateChannel(channel);
+}
+
+void EventLoop::abortNotInLoopThread() {
+    std::cout << "[EventLoop::abortNotInLoopThread] error: EventLoop  " << this << " was created in threadId_ = " << threadId_ << ", current thread id = " << CurrentThread::tid() << std::endl;
+    assert(false);
+}
+
 void EventLoop::wakeup() {
     uint64_t data = 1;
     ssize_t n = ::write(wakeupFd_, &data, sizeof data);
@@ -138,4 +137,20 @@ void EventLoop::handleRead() {
         std::cout << "[EventLoop::handleRead] error: EventLoop::handleRead() reads " << n << " bytes instead of 8" << std::endl;
         assert(false);
     }
+}
+
+void EventLoop::doPendingFunctors() {
+    std::vector<Functor> functors;
+    callingPendingFunctors_ = true;
+
+    {
+        MutexLockGuard lock(mutex_);
+        functors.swap(pendingFunctors_);
+    }
+
+    for (size_t i = 0; i < functors.size(); ++i) {
+        functors[i]();
+    }
+
+    callingPendingFunctors_ = false;
 }

@@ -1,5 +1,4 @@
 #include "Poller.h"
-#include "EventLoop.h"
 #include "Channel.h"
 #include "muduo-c11/base/Timestamp.h"
 
@@ -37,11 +36,12 @@ Timestamp Poller::poll(int timeoutMs, ChannelList* activeChannels) {
     return now;
 }
 
-void Poller::fillActiveChannels(int numEvents, ChannelList* activeChannels) {
+void Poller::fillActiveChannels(int numEvents, ChannelList* activeChannels) const {
     for (PollfdList::const_iterator pfd = pollfds_.begin(); pfd != pollfds_.end() && numEvents > 0; ++pfd) {
         if (pfd->revents > 0) {
+            std::cout << "[Poller::fillActiveChannels] revents: fd = " << pfd->fd << std::endl;
             --numEvents;
-            ChannelMap::iterator it = channels_.find(pfd->fd);
+            ChannelMap::const_iterator it = channels_.find(pfd->fd);
             assert(it != channels_.end());
             Channel* channel = it->second;
             assert(pfd->fd == channel->fd());
@@ -68,14 +68,12 @@ void Poller::updateChannel(Channel* channel) {
     else {
         assert(channels_.find(channel->fd()) != channels_.end());
         assert(channels_[channel->fd()] == channel);
-
         int idx = channel->index();
         assert(0 <= idx && idx < static_cast<int>(pollfds_.size()));
         struct pollfd& pfd = pollfds_[idx];
         assert(pfd.fd == channel->fd() || -1 == pfd.fd);
         pfd.events = static_cast<short>(channel->events());
         pfd.revents = 0;
-
         if (channel->isNoneEvent()) {
             pfd.fd = -1;
         }

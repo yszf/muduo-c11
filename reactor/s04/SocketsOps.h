@@ -14,7 +14,7 @@ namespace muduo {
             return htobe64(host64);
         }
 
-        inline uint64_t hostToNetwork32(uint32_t host32) {
+        inline uint32_t hostToNetwork32(uint32_t host32) {
             return htonl(host32);
         }
 
@@ -44,7 +44,7 @@ namespace muduo {
 
         void close(int sockfd);
 
-        void toHostPort(char* buf, size_t size, const struct sockadr_in& adr);
+        void toHostPort(char* buf, size_t size, const struct sockaddr_in& adr);
 
         void fromHostPort(const char* ip, uint16_t port, struct sockaddr_in* addr);
 

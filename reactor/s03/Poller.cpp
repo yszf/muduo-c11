@@ -1,5 +1,4 @@
 #include "Poller.h"
-#include "EventLoop.h"
 #include "Channel.h"
 #include "muduo-c11/base/Timestamp.h"
 
@@ -83,8 +82,4 @@ void Poller::updateChannel(Channel* channel) {
         }
     }
 
-}
-
-void Poller::assertInLoopThread() {
-    loop_->assertInLoopThread();
 }

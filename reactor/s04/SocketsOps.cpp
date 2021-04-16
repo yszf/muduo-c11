@@ -31,6 +31,7 @@ namespace {
         flags = ::fcntl(sockfd, F_GETFD, 0);
         flags |= O_CLOEXEC;
         ret = ::fcntl(sockfd, F_SETFD, flags);
+        (void) ret;
         // FIXME check
     }
 }
@@ -77,7 +78,6 @@ int sockets::accept(int sockfd, struct sockaddr_in* addr) {
     setNonBlockAndCloseOnExec(connfd);
 #else
     int connfd = ::accept4(sockfd, sockaddr_cast(addr), &addrlen, SOCK_NONBLOCK | SOCK_CLOEXEC);
-
 #endif
     if (connfd < 0) {
         int savedErrno = errno;
@@ -118,16 +118,19 @@ void sockets::close(int sockfd) {
     }
 }
 
-void sockets::toHostPort(char* buf, size_t size, const struct sockadd_in& addr) {
+void sockets::toHostPort(char* buf, size_t size, const struct sockaddr_in& addr) {
     char host[INET_ADDRSTRLEN] = "INVALID";
-    ::inet_ntop(AF_INET, &addr.sin_addr, host, sizeof(host));
+    if (nullptr == ::inet_ntop(AF_INET, &addr.sin_addr, host, sizeof(host))) {
+        std::cout << "error: sockets::toHostPort" << std::endl;
+        assert(false);
+    }
 
     uint16_t port = sockets::networkToHost16(addr.sin_port);
     snprintf(buf, size, "%s:%u", host, port);
 
 }
 
-void sockets::fromHostPort(const char* ip, uing16_t port, struct sockaddr_in* addr) {
+void sockets::fromHostPort(const char* ip, uint16_t port, struct sockaddr_in* addr) {
     addr->sin_family = AF_INET;
     addr->sin_port = hostToNetwork16(port);
     if (::inet_pton(AF_INET, ip, &addr->sin_addr) <= 0) {

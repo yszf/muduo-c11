@@ -1,11 +1,12 @@
-#ifndef MUDUO_REACTOR_EVETNLOOP_H
+#ifndef MUDUO_REACTOR_EVENTLOOP_H
 #define MUDUO_REACTOR_EVENTLOOP_H
 
 #include "muduo-c11/base/noncopyable.h"
 #include "muduo-c11/base/CurrentThread.h"
 #include "muduo-c11/base/Mutex.h"
-#include "Channel.h"
+#include "muduo-c11/base/Timestamp.h"
 #include "Callbacks.h"
+#include "TimerId.h"
 
 #include <vector>
 #include <memory>
@@ -14,9 +15,9 @@
 namespace muduo {
 
     class Poller;
+    class Channel;
     class TimerQueue;
-    class TimerId;
-    class Timestamp;
+
     class EventLoop : noncopyable {
     public:
         typedef std::function<void()> Functor;
@@ -28,7 +29,13 @@ namespace muduo {
 
         void quit();
 
-        void updateChannel(Channel* channel);
+        Timestamp pollReturnTime() const {
+            return pollReturnTime_;
+        }
+
+        void runInLoop(const Functor& cb);
+
+        void queueInLoop(const Functor& cb);
 
         TimerId runAt(const Timestamp& time, const TimerCallback& cb);
 
@@ -36,11 +43,9 @@ namespace muduo {
 
         TimerId runEvery(double interval, const TimerCallback& cb);
 
-        void runInLoop(const Functor& cb);
-
-        void queueInLoop(const Functor& cb);
-
         void wakeup();
+
+        void updateChannel(Channel* channel);
 
         void assertInLoopThread() {
             if (!isInLoopThread()) {
@@ -48,26 +53,27 @@ namespace muduo {
             }
         }
 
-        bool isInLoopThread() {
+        bool isInLoopThread() const {
             return threadId_ == CurrentThread::tid();
         }
     private:
+        void abortNotInLoopThread();
         void handleRead();
         void doPendingFunctors();
-        void abortNotInLoopThread();
+
 
         typedef std::vector<Channel*> ChannelList;
 
         bool looping_;
         bool quit_;
         bool callingPendingFunctors_;
-        pid_t threadId_;
+        const pid_t threadId_;
         Timestamp pollReturnTime_;
-        ChannelList activeChannels_;
         std::unique_ptr<Poller> poller_;
         std::unique_ptr<TimerQueue> timerQueue_;
-        std::unique_ptr<Channel> wakeupChannel_;
         int wakeupFd_;
+        std::unique_ptr<Channel> wakeupChannel_;
+        ChannelList activeChannels_;
         MutexLock mutex_;
         std::vector<Functor> pendingFunctors_;
 

@@ -33,9 +33,9 @@ namespace muduo {
         bool insert(Timer* timer);
 
         EventLoop* loop_;
-        TimerList timers_;
-        Channel timerChannel_;
         const int timerfd_;
+        Channel timerChannel_;
+        TimerList timers_;
 
     }; // class TimerQueue
 

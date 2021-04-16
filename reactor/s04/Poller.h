@@ -2,6 +2,7 @@
 #define MUDUO_REACTOR_POLLER_H
 
 #include "muduo-c11/base/noncopyable.h"
+#include "EventLoop.h"
 
 #include <vector>
 #include <map>
@@ -10,7 +11,6 @@ struct pollfd;
 
 namespace muduo {
 
-    class EventLoop;
     class Channel;
     class Timestamp;
     class Poller : noncopyable {
@@ -29,15 +29,16 @@ namespace muduo {
         }
 
     private:
-        void fillActiveChannels(int numEvents, ChannelList* activeChannels);
+        void fillActiveChannels(int numEvents, ChannelList* activeChannels) const;
 
-        typedef std::map<int, Channel*> ChannelMap;
         typedef std::vector<struct pollfd> PollfdList;
+        typedef std::map<int, Channel*> ChannelMap;
 
         EventLoop* loop_;
-        ChannelMap channels_;
         PollfdList pollfds_;
-    };
+        ChannelMap channels_;
+
+    }; // class Poller
 
 } // namespace muduo
 

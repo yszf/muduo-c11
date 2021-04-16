@@ -2,7 +2,7 @@
 #define MUDUO_REACTOR_POLLER_H
 
 #include "muduo-c11/base/noncopyable.h"
-
+#include "EventLoop.h"
 #include <vector>
 #include <map>
 
@@ -10,7 +10,6 @@ struct pollfd;
 
 namespace muduo {
 
-    class EventLoop;
     class Channel;
     class Timestamp;
     class Poller : noncopyable {
@@ -27,8 +26,9 @@ namespace muduo {
         // must be called in the loop thread
         void updateChannel(Channel* channel);
 
-        void assertInLoopThread();
-
+        void assertInLoopThread() {
+            loop_->assertInLoopThread();
+        }
     private:
         void fillActiveChannels(int numEvents, ChannelList* activeChannels) const;
 
