@@ -48,6 +48,8 @@ namespace muduo {
 
         void fromHostPort(const char* ip, uint16_t port, struct sockaddr_in* addr);
 
+        struct sockaddr_in getLocalAddr(int sockfd);
+
     } // namespace sockets
 
 } // namespace muduo

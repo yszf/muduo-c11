@@ -3,6 +3,7 @@
 
 #include "muduo-c11/base/noncopyable.h"
 #include "Callbacks.h"
+#include "TcpConnection.h"
 
 #include <string>
 #include <memory>
