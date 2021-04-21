@@ -14,11 +14,13 @@ LIB_SRC = 			\
 	Timer.cpp		\
 	TimerQueue.cpp			\
 
-BINARIES = test10 test11
+BINARIES = test8 test9 test10 test11
 
 all: $(BINARIES)
 
 include ../reactor.mk
 
+test8: test8.cpp
+test9: test9.cpp
 test10: test10.cpp
 test11: test11.cpp

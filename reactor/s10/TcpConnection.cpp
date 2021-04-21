@@ -20,7 +20,7 @@ TcpConnection::TcpConnection(EventLoop* loop, const std::string& name, int sockf
     localAddr_(localAddr), 
     peerAddr_(peerAddr) {
 
-    std::cout << "debug: TcpConnection::ctor[" << name_ << "] at " << this << ", fd = " << sockfd << std::endl;
+    std::cout << "debug: TcpConnection::ctor[" << name_ << "] at loop = " << loop_ << ", fd = " << sockfd << std::endl;
 
     channel_->setReadCallback(std::bind(&TcpConnection::handleRead, this, std::placeholders::_1));
     channel_->setWriteCallback(std::bind(&TcpConnection::handleWrite, this));

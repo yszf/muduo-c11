@@ -47,6 +47,9 @@ int main(int argc, char* argv[]) {
     server.setConnectionCallback(onConnection);
     server.setMessageCallback(onMessage);
     server.setWriteCompleteCallback(onWriteComplete);
+    if (argc > 1) {
+        server.setThreadNum(atoi(argv[1]));
+    }
     server.start();
 
     loop.loop();

@@ -14,11 +14,14 @@ namespace muduo {
     class EventLoop;
     class Acceptor;
     class InetAddress;
+    class EventLoopThreadPool;
 
     class TcpServer : noncopyable {
     public:
         TcpServer(EventLoop* loop, const InetAddress& listenAddr);
         ~TcpServer();
+
+        void setThreadNum(int numThreads);
 
         void start();
 
@@ -37,13 +40,17 @@ namespace muduo {
     private:
         // not thread safe, but in loop
         void newConnection(int sockfd, const InetAddress& peerAddr);
+        // thread safe
         void removeConnection(const TcpConnectionPtr& conn);
+        // not thread safe, but in loop
+        void removeConnectionInLoop(const TcpConnectionPtr& conn);
 
         typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
 
         EventLoop* loop_;
         const std::string name_;
         std::unique_ptr<Acceptor> acceptor_;
+        std::unique_ptr<EventLoopThreadPool> threadPool_;
         ConnectionCallback connectionCallback_;
         MessageCallback messageCallback_;
         WriteCompleteCallback writeCompleteCallback_;
