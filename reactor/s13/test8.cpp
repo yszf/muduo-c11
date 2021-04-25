@@ -1,15 +1,12 @@
+#include "TcpServer.h"
 #include "EventLoop.h"
-#include "TcpClient.h"
 #include "InetAddress.h"
-
 #include <stdio.h>
-
-std::string message = "Hello";
+#include <unistd.h>
 
 void onConnection(const muduo::TcpConnectionPtr& conn) {
     if (conn->connected()) {
         printf("onConnection(): new connection [%s] from %s\n", conn->name().c_str(), conn->peerAddress().toHostPort().c_str());
-        conn->send(message);
     }
     else {
         printf("onConnection(): connection [%s] is down\n", conn->name().c_str());
@@ -22,18 +19,20 @@ void onMessage(const muduo::TcpConnectionPtr& conn, muduo::Buffer* buf, muduo::T
     printf("onMessage(): [%s]\n", buf->retrieveAsString().c_str());
 }
 
-int main() {
-    muduo::EventLoop loop;
-    muduo::InetAddress serverAddress("127.0.0.1", 9981);
-    muduo::TcpClient client(&loop, serverAddress);
+int main(int argc, char* argv[]) {
+    printf("main(): pid = %d, tid = %d\n", getpid(), muduo::CurrentThread::tid());
 
-    client.setConnectionCallback(onConnection);
-    client.setMessageCallback(onMessage);
-    client.enableRetry();
-    client.connect();
+    muduo::InetAddress listenAddr(9981);
+    muduo::EventLoop loop;
+    muduo::TcpServer server(&loop, listenAddr);
+    server.setConnectionCallback(onConnection);
+    server.setMessageCallback(onMessage);
+    if (argc > 1) {
+        server.setThreadNum(atoi(argv[1]));
+    }
+    server.start();
+
     loop.loop();
 
     return 0;
 }
-
-
