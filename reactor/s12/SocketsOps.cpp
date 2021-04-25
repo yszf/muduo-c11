@@ -146,7 +146,7 @@ void sockets::fromHostPort(const char* ip, uint16_t port, struct sockaddr_in* ad
     addr->sin_port = hostToNetwork16(port);
     if (::inet_pton(AF_INET, ip, &addr->sin_addr) <= 0) {
         std::cout << "error: sockets::fromHostPort" << std::endl;
-        assert(false);
+    //  assert(false);
     }
 }
 

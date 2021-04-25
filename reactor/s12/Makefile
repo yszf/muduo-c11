@@ -10,16 +10,17 @@ LIB_SRC = 			\
 	Poller.cpp		\
 	Socket.cpp		\
 	SocketsOps.cpp			\
+	TcpClient.cpp			\
 	TcpConnection.cpp		\
 	TcpServer.cpp			\
 	Timer.cpp		\
 	TimerQueue.cpp			\
 
-BINARIES = test9 test12
+BINARIES = test9 test13
 
 all: $(BINARIES)
 
 include ../reactor.mk
 
 test9: test9.cpp
-test12: test12.cpp
+test13: test13.cpp

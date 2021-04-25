@@ -28,7 +28,7 @@ TcpClient::TcpClient(EventLoop* loop, const InetAddress& serverAddr)
     : loop_(loop), 
     connector_(new Connector(loop, serverAddr)), 
     retry_(false), 
-    connect_(true), 
+    connect_(false), 
     nextConnId_(1) {
 
     connector_->setNewConnectionCallback(std::bind(&TcpClient::newConnection, this, std::placeholders::_1));

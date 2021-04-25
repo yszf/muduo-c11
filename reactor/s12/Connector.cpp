@@ -80,6 +80,7 @@ void Connector::restart() {
     setState(kDisconnected);
     retryDelayMs_ = kInitRetryDelayMs;
     connect_ = true;
+    startInLoop();
 }
 
 void Connector::stop() {

@@ -4,6 +4,7 @@
 #include "muduo-c11/base/noncopyable.h"
 #include "muduo-c11/base/Mutex.h"
 #include "Callbacks.h"
+#include "TcpConnection.h"
 
 #include <memory>
 
@@ -39,7 +40,7 @@ namespace muduo {
             return retry_;
         }
 
-        void enalbeRetry() {
+        void enableRetry() {
             retry_ = true;
         }
 
