@@ -2,6 +2,7 @@
 #define MUDUO_NET_POLLER_H
 
 #include "muduo-c11/base/noncopyable.h"
+#include "muduo-c11/base/Timestamp.h"
 #include "EventLoop.h"
 
 #include <map>
@@ -20,7 +21,7 @@ namespace muduo {
             Poller(EventLoop* loop);
             virtual ~Poller();
 
-            virtual Timestamp poll(int timeoutMs, ChannelList* activeChannels) = 0;
+            virtual muduo::Timestamp poll(int timeoutMs, ChannelList* activeChannels) = 0;
 
             virtual void updateChannel(Channel* channel) = 0;
 

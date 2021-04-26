@@ -4,6 +4,7 @@
 #include "muduo-c11/base/noncopyable.h"
 #include "muduo-c11/base/Timestamp.h"
 #include "muduo-c11/base/Mutex.h"
+#include "TimerId.h"
 #include "Callbacks.h"
 
 #include <sched.h> // pid_t
@@ -16,10 +17,9 @@ namespace muduo {
 
     namespace net {
 
-        class TimerQueue;
         class Poller;
         class Channel;
-        class TimerId;
+        class TimerQueue;
 
         class EventLoop : noncopyable {
         public:
