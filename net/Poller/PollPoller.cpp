@@ -15,10 +15,10 @@ PollPoller::PollPoller(EventLoop* loop)
 
 PollPoller::~PollPoller() = default;
 
-muduo::Timestamp PollPoller::poll(int timeoutMs, ChannelList* activeChannels) {
+Timestamp PollPoller::poll(int timeoutMs, ChannelList* activeChannels) {
     int numEvents = ::poll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);
     int savedErrno = errno;
-    muduo::Timestamp now(muduo::Timestamp::now());
+    Timestamp now(Timestamp::now());
     if (numEvents > 0) {
         std::cout << "[PollPoller::poll] " << numEvents << " events happended" << std::endl;
         fillActiveChannels(numEvents, activeChannels);

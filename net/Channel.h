@@ -2,6 +2,7 @@
 #define MUDUO_NET_CHANNEL_H
 
 #include "muduo-c11/base/noncopyable.h"
+#include "muduo-c11/base/Timestamp.h"
 
 #include <functional>
 
@@ -10,7 +11,6 @@ namespace muduo {
     namespace net {
 
         class EventLoop;
-        class Timestamp;
 
         class Channel : noncopyable {
         public:
@@ -37,6 +37,8 @@ namespace muduo {
             void setErrorCallback(EventCallback cb) {
                 errorCallback_ = std::move(cb);
             }
+
+            void tie(const std::shared_ptr<void>&);
 
             int fd() const {
                 return fd_;
@@ -100,6 +102,14 @@ namespace muduo {
                 index_ = idx;
             }
 
+            // for debug 
+            string reventsToString() const;
+            string eventsToString() const;
+
+            void doNotLogHup() {
+                logHup_ = false;
+            }
+
             EventLoop* ownerLoop() {
                 return loop_;
             }
@@ -107,7 +117,10 @@ namespace muduo {
             void remove();
 
         private:
+            static string eventsToString(int fd, int ev);
+
             void update();
+            void handleEventWithGuard(Timestamp receiveTime);
 
             static const int kNoneEvent;
             static const int kReadEvent;
@@ -118,6 +131,12 @@ namespace muduo {
             int events_;
             int revents_;
             int index_; // used by Poller
+
+            bool logHup_;
+            std::weak_ptr<void> tie_;
+            bool tied_;
+            bool eventHanding_; // 是否正在处理事件
+            bool addedToLoop_;
 
             ReadEventCallback readCallback_;
             EventCallback writeCallback_;

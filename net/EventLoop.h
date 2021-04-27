@@ -99,7 +99,7 @@ namespace muduo {
             std::atomic<bool> quit_;
             bool eventHandling_; // atomic
             bool callingPendingFunctors_; // atomic
-            int64_t iteration_;
+            int64_t iteration_; // poll返回次数
             const pid_t threadId_;
             Timestamp pollReturnTime_;
             std::unique_ptr<Poller> poller_;

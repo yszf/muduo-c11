@@ -6,13 +6,13 @@
 #include "Channel.h"
 
 #include <set>
+#include <vector>
 
 namespace muduo {
 
     namespace net {
 
         class EventLoop;
-        class Timestamp;
         class Timer;
         class TimerId;
 
@@ -30,6 +30,16 @@ namespace muduo {
             typedef std::set<Entry> TimerList;
             typedef std::pair<Timer*, int64_t> ActiveTimer;
             typedef std::set<ActiveTimer> ActiveTimerSet;
+
+            void addTimerInLoop(Timer* timer);
+            void cancelInLoop(TimerId timerId);
+
+            void handleRead();
+
+            std::vector<Entry> getExpired(Timestamp now);
+            void reset(const std::vector<Entry>& expired, Timestamp now);
+
+            bool insert(Timer* timer);
 
             EventLoop* loop_;
             const int timerfd_;

@@ -37,7 +37,11 @@ namespace muduo {
                 return repeat_;
             }
 
-            int64_t restart(Timestamp now);
+            int64_t sequence() const {
+                return sequence_;
+            }
+
+            void restart(Timestamp now);
 
             static int64_t numCreated() {
                 return s_numCreated_.get();

@@ -1,6 +1,7 @@
 #ifndef MUDUO_NET_POLLER_POLLPOLLER_H
 #define MUDUO_NET_POLLER_POLLPOLLER_H
 
+#include "muduo-c11/base/Timestamp.h"
 #include "muduo-c11/net/Poller.h"
 #include <vector>
 
@@ -15,7 +16,7 @@ namespace muduo {
             PollPoller(EventLoop* loop);
             ~PollPoller() override;
 
-            muduo::Timestamp poll(int timeoutMs, ChannelList* activeChannels) override;
+            Timestamp poll(int timeoutMs, ChannelList* activeChannels) override;
 
             void updateChannel(Channel* channel) override;
 
