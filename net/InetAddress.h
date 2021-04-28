@@ -1,5 +1,5 @@
 #ifndef MUDUO_NET_INETADDRESS_H
-#define MUDUO_NET_INTEADDRESS_H
+#define MUDUO_NET_INETADDRESS_H
 
 #include "muduo-c11/base/copyable.h"
 #include "SocketsOps.h"
