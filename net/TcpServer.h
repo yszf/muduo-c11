@@ -4,7 +4,7 @@
 #include "muduo-c11/base/noncopyable.h"
 #include "muduo-c11/base/Types.h"
 #include "muduo-c11/base/Atomic.h"
-#include "Callbacks.h"
+#include "TcpConnection.h"
 
 #include <memory>
 #include <map>
@@ -15,7 +15,6 @@ namespace muduo {
 
         class EventLoop;
         class Acceptor;
-        class InetAddress;
         class EventLoopThreadPool;
 
         class TcpServer : noncopyable {

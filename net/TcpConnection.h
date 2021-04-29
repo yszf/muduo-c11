@@ -17,7 +17,6 @@ namespace muduo {
     namespace net {
 
         class EventLoop;
-        class Timestamp;
         class Socket;
         class Channel;
 

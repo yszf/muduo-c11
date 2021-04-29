@@ -7,24 +7,32 @@
 
 namespace muduo {
 
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_2;
+
     namespace net {
 
         typedef std::function<void()> TimerCallback;
 
         class TcpConnection;
         class Buffer;
-
         typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 
         typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;
 
-        typedef std::function<void(const TcpConnectionPtr&, Buffer*, muduo::Timestamp)> MessageCallback;
+        typedef std::function<void(const TcpConnectionPtr&, Buffer*, Timestamp)> MessageCallback;
 
         typedef std::function<void(const TcpConnectionPtr&)> WriteCompleteCallback;
 
         typedef std::function<void(const TcpConnectionPtr&)> CloseCallback;
 
         typedef std::function<void(const TcpConnectionPtr&, size_t)> HighWaterMarkCallback;
+
+        void defaultConnectionCallback(const TcpConnectionPtr& conn);
+
+        void defaultMessageCallback(const 
+        TcpConnectionPtr& conn, Buffer* buffer, Timestamp receiveTime);
 
     } // namespace net
 

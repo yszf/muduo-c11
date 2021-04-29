@@ -2,19 +2,22 @@
 #define MUDUO_NET_INETADDRESS_H
 
 #include "muduo-c11/base/copyable.h"
-#include "SocketsOps.h"
-#include <arpa/inet.h>
-#include <string>
+#include "muduo-c11/base/Types.h"
+#include <netinet/in.h>
 
 namespace muduo {
 
     namespace net {
 
+        namespace sockets {
+            const struct sockaddr* sockaddr_cast(const struct sockaddr_in6* addr);
+        }
+
         class InetAddress : public copyable {
         public:
             explicit InetAddress(uint16_t port = 0, bool loopbackOnly = false, bool ipv6 = false);
 
-            InetAddress(std::string ip, uint16_t port, bool ipv6 = false);
+            InetAddress(string ip, uint16_t port, bool ipv6 = false);
 
             explicit InetAddress(const struct sockaddr_in& addr)
                 : addr_(addr) {
@@ -30,9 +33,9 @@ namespace muduo {
                 return addr_.sin_family;
             }
 
-            std::string toIp() const;
+            string toIp() const;
             
-            std::string toIpPort() const;
+            string toIpPort() const;
             
             uint16_t toPort() const;
 
@@ -50,7 +53,7 @@ namespace muduo {
                 return addr_.sin_port;
             }
 
-            static bool resolve(std::string hostname, InetAddress* result);
+            static bool resolve(string hostname, InetAddress* result);
 
             void setScopeId(uint32_t scope_id);
         

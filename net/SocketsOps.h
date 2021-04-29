@@ -11,13 +11,13 @@ namespace muduo {
 
             int createNonblockingOrDie(sa_family_t family);
 
-            int connect(int sockfd, const struct sockaddr* addr);
-
             void bindOrDie(int sockfd, const struct sockaddr* addr);
 
             void listenOrDie(int sockfd);
 
             int accept(int sockfd, struct sockaddr_in6* addr);
+
+            int connect(int sockfd, const struct sockaddr* addr);
 
             ssize_t read(int sockfd, void* buf, size_t count);
             
@@ -39,7 +39,7 @@ namespace muduo {
 
             int getSocketError(int sockfd);
 
-            const struct sockadr* sockaddr_cast(const struct sockaddr_in* addr);
+            const struct sockaddr* sockaddr_cast(const struct sockaddr_in* addr);
 
             const struct sockaddr* sockaddr_cast(const struct sockaddr_in6* addr);
 
