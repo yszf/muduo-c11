@@ -25,6 +25,8 @@ namespace muduo {
                 assert(prependableBytes() == kCheapPrepend);
             }
 
+            ~Buffer() {}
+
             size_t readableBytes() const {
                 return writerIndex_ - readerIndex_;
             }
@@ -139,7 +141,8 @@ namespace muduo {
                 append(&x, sizeof x);
             }
 
-            ~Buffer();
+            ssize_t readFd(int fd, int* savedErrno);
+
         private:
             char* begin() {
                 return &*buffer_.begin();
@@ -167,6 +170,8 @@ namespace muduo {
             std::vector<char> buffer_;
             size_t readerIndex_;
             size_t writerIndex_;
+
+            static const char kCRLF[];
         };
 
     } // namespace net

@@ -8,7 +8,7 @@ using namespace muduo::net;
 
 
 EventLoopThreadPool::EventLoopThreadPool(EventLoop* baseLoop, const string& name) 
-    : baseLoop_(baseLoop_), 
+    : baseLoop_(baseLoop), 
     name_(name), 
     started_(false), 
     numThreads_(0), 

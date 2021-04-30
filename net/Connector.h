@@ -20,7 +20,7 @@ namespace muduo {
             Connector(EventLoop* loop, const InetAddress& serverAddr);
             ~Connector();
 
-            void setNewConnection(const NewConnectionCallback& cb) {
+            void setNewConnectionCallback(const NewConnectionCallback& cb) {
                 newConnectionCallback_ = cb;
             }
 

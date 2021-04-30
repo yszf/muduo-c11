@@ -24,7 +24,7 @@ namespace muduo {
                 newConnectionCallback_ = cb;
             }
 
-            bool listenning() const {
+            bool listening() const {
                 return listening_;
             }
 

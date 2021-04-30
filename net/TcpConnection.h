@@ -114,6 +114,8 @@ namespace muduo {
             void forceCloseInLoop();
             void setState(StateE s) { state_ = s; }
             const char* stateToString() const;
+            void startReadInLoop();
+            void stopReadInLoop();
 
             EventLoop* loop_;
             const string name_;

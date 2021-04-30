@@ -1,10 +1,7 @@
 #ifndef MUDUO_NET_TCPCLIENT_H
 #define MUDUO_NET_TCPCLIENT_H
 
-#include "muduo-c11/base/noncopyable.h"
 #include "muduo-c11/base/Mutex.h"
-#include "muduo-c11/base/Types.h"
-#include "Callbacks.h"
 #include "TcpConnection.h"
 
 #include <memory>
@@ -13,7 +10,6 @@ namespace muduo {
 
     namespace net {
 
-        class EventLoop;
         class Connector;
         typedef std::shared_ptr<Connector> ConnectorPtr;
 

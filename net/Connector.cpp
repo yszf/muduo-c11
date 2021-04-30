@@ -8,6 +8,7 @@
 using namespace muduo;
 using namespace muduo::net;
 
+const int Connector::kMaxRetryDelayMs;
 
 Connector::Connector(EventLoop* loop, const InetAddress& serverAddr) 
     : loop_(loop), 
