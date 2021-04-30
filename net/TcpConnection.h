@@ -20,7 +20,7 @@ namespace muduo {
         class Socket;
         class Channel;
 
-        class TcpConnection : noncopyable {
+        class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnection> {
         public:
             TcpConnection(EventLoop* loop, const string& name, int sockfd, const InetAddress& localAddr, const InetAddress& peerAddr);
             
@@ -47,7 +47,7 @@ namespace muduo {
             }
 
             bool disconnected() const {
-                return kDisConnected == state_;
+                return kDisconnected == state_;
             }
 
             bool getTcpInfo(struct tcp_info*) const;
@@ -101,7 +101,7 @@ namespace muduo {
             void connectDestroyed();
             
         private:
-            enum StateE { kDisConnected, kConnecting, kConnected, kDisconnecting };
+            enum StateE { kDisconnected, kConnecting, kConnected, kDisconnecting };
 
             void handleRead(Timestamp receiveTime);
             void handleWrite();

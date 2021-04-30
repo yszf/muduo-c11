@@ -5,6 +5,7 @@
 #include "muduo-c11/base/Timestamp.h"
 
 #include <functional>
+#include <memory>
 
 namespace muduo {
 
@@ -38,7 +39,7 @@ namespace muduo {
                 errorCallback_ = std::move(cb);
             }
 
-            void tie(const std::shared_ptr<void>&);
+            void tie(const std::shared_ptr<void>& obj);
 
             int fd() const {
                 return fd_;

@@ -4,7 +4,7 @@
 #include "muduo-c11/base/noncopyable.h"
 #include "Socket.h"
 #include "Channel.h"
-
+#include "InetAddress.h"
 
 namespace muduo {
 
@@ -25,7 +25,7 @@ namespace muduo {
             }
 
             bool listenning() const {
-                return listenning_;
+                return listening_;
             }
 
             void listen();
@@ -37,7 +37,7 @@ namespace muduo {
             Socket acceptSocket_;
             Channel acceptChannel_;
             NewConnectionCallback newConnectionCallback_;
-            bool listenning_;
+            bool listening_;
             int idleFd_;
 
         }; // class Acceptor
