@@ -28,6 +28,7 @@ EPollPoller::EPollPoller(EventLoop* loop)
     if (epollfd_ < 0) {
         std::cout << "[EPollPoller::EPollPoller] sysfatal" << std::endl;
     }
+    std::cout << "[EPollPoller::EPollPoller] epollfd = " << epollfd_ << std::endl;
 }
 
 EPollPoller::~EPollPoller() {
@@ -137,9 +138,6 @@ void EPollPoller::update(int operation, Channel* channel) {
 
     if (::epoll_ctl(epollfd_, operation, fd, &event) < 0) {
         std::cout << "[EPollPoller::update] syserr: epoll_ctl op = " << operationToString(operation) << " fd = " << fd << std::endl;
-    }
-    else {
-        std::cout << "[EPollPoller::update] sysfatal: epoll_ctl op = " << operationToString(operation) << " fd = " << fd << std::endl;
     }
 }
 
