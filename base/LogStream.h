@@ -3,6 +3,7 @@
 
 #include "muduo-c11/base/noncopyable.h"
 #include "muduo-c11/base/Types.h"
+#include "muduo-c11/base/StringPiece.h"
 
 namespace muduo {
 
@@ -16,16 +17,21 @@ namespace muduo {
         public:
             FixedBuffer()
                 : cur_(data_) {
-                
+                memZero(data_, sizeof data_);
+                setCookie(cookieStart);
             }
 
             ~FixedBuffer() {
-
+                setCookie(cookieEnd);
             }
 
             void append(const char* buf, size_t len) {
-                memcpy(cur_, buf, len);
-                cur_ += len;
+                // FIXME: append partially
+                if (implicit_cast<size_t>(avail()) > len) {
+                    memcpy(cur_, buf, len);
+                    cur_ += len;
+                }
+
             }
 
             const char* data() const {
@@ -36,12 +42,13 @@ namespace muduo {
                 return static_cast<int>(cur_ - data_);
             }
 
+            // write to data_ directly
             char* current() {
                 return cur_;
             }
 
             int avail() const {
-                return static_cast<int>(end() - current());
+                return static_cast<int>(end() - cur_);
             }
 
             void add(size_t len) {
@@ -53,15 +60,22 @@ namespace muduo {
             }
 
             void bzero() {
-                memZero(data_, sizeof data);
+                memZero(data_, sizeof data_);
             }
 
+            // for used by GDB
+            const char* debugString();
             void setCookie(void (*cookie)()) {
                 cookie_ = cookie;
             }
-
+            
+            // for used by unit test
             string toString() const {
                 return string(data_, length());
+            }
+            
+            StringPiece toStringPiece() const {
+                return StringPiece(data_, length());
             }
 
         private:
@@ -69,13 +83,18 @@ namespace muduo {
                 return data_ + sizeof data_;
             }
 
+            // Must be outline function for cookies
+            static void cookieStart();
+            static void cookieEnd();
+
             void (*cookie_)();
 
             char data_[SIZE];
             char* cur_;
             
         }; // template class FixedBuffer
-    }
+
+    } // namespace detail
 
     class LogStream : noncopyable {
         typedef LogStream self;
@@ -102,10 +121,13 @@ namespace muduo {
             *this << static_cast<double>(v);
             return *this;
         }
-        self operator<<(double);
+        
+        self& operator<<(double);
+        self& operator<<(long double);
 
         self& operator<<(char v) {
             buffer_.append(&v, 1);
+            return *this;
         }
 
         self& operator<<(const char* str) {
@@ -127,6 +149,16 @@ namespace muduo {
             return *this;
         }
 
+        self& operator<<(const StringPiece& v) {
+            buffer_.append(v.data(), v.size());
+            return *this;
+        }
+
+        self& operator<<(const Buffer& v) {
+            *this << v.toStringPiece();
+            return *this;
+        }
+
         void append(const char* data, int len) {
             buffer_.append(data, len);
         }
@@ -140,9 +172,50 @@ namespace muduo {
         }
 
     private:
+        void staticCheck();
+
+        template<typename T>
+        void formatInteger(T);
+
         Buffer buffer_;
 
+        static const int kMaxNumericSize = 32;
+
     }; // class LogStream
+
+    class Fmt {
+    public:
+        template<typename T>
+        Fmt(const char* fmt, T val);
+
+        const char* data() const {
+            return buf_;
+        }
+
+        int length() const {
+            return length_;
+        }
+    
+    private:
+        char buf_[32];
+        int length_;
+
+    }; // class Fmt
+
+    inline LogStream& operator<<(LogStream& s, const Fmt& fmt) {
+        s.append(fmt.data(), fmt.length());
+        return s;
+    }
+
+    // Format quantity n in SI units (k, M, G, T, P, E).
+    // The returned string is atmost 5 characters long.
+    // Requires n >= 0
+    string formatSI(int64_t n);
+
+    // Format quantity n in IEC (binary) units (Ki, Mi, Gi, Ti, Pi, Ei).
+    // The returned string is atmost 6 characters long.
+    // Requires n >= 0
+    string formatIEC(int64_t n);
 
 } // namespace muduo
 

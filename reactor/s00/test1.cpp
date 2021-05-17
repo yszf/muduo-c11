@@ -2,6 +2,9 @@
 #include "muduo-c11/base/Thread.h"
 #include <stdio.h>
 #include <unistd.h>
+#include "muduo-c11/base/Logging.h"
+
+using namespace muduo;
 
 void threadFunc() {
     printf("threadFunc(): pid = %d, tid = %d\n", ::getpid(), muduo::CurrentThread::tid());
@@ -11,6 +14,7 @@ void threadFunc() {
 }
 
 int main() {
+//    Logger::setLogLevel(Logger::TRACE);
     printf("main(): pid = %d, tid = %d\n", ::getpid(), muduo::CurrentThread::tid());
 
     muduo::EventLoop loop;

@@ -1,7 +1,6 @@
 #include "muduo-c11/reactor/s00/EventLoop.h"
-#include <iostream>
+#include "muduo-c11/base/Logging.h"
 #include <poll.h>
-#include <assert.h>
 
 using namespace muduo;
 
@@ -10,9 +9,9 @@ __thread EventLoop* t_loopInThisThread = nullptr;
 EventLoop::EventLoop() 
     : looping_(false), 
     threadId_(CurrentThread::tid()) {
-    std::cout << "info: EventLoop created " << this << " in thread " << threadId_ << std::endl;
+    LOG_TRACE << "EventLoop created " << this << " in thread " << threadId_;
     if (t_loopInThisThread) {
-        std::cout << "warn: EventLoop created " << this << " in thread " << threadId_ << std::endl;
+        LOG_FATAL << "EventLoop created " << this << " in thread " << threadId_;
     }
     else {
         t_loopInThisThread = this;
@@ -29,14 +28,13 @@ void EventLoop::loop() {
     assertInLoopThread();
     looping_ = true;
 
-    ::poll(nullptr, 0, 500 * 1000);
+    ::poll(nullptr, 0, 10 * 1000);
 
-    std::cout << "info: EventLoop " << this << " stop looping" << std::endl;
+    LOG_TRACE << "EventLoop " << this << " stop looping";
 
     looping_ = false;
 }
 
 void EventLoop::abortNotInLoopThread() {
-    std::cout << "error: EventLoop::abortNotInLoopThread - EventLoop " << this << " was created in threadId_ = " << threadId_ << ", current thread id = " << CurrentThread::tid() << std::endl;
-    assert(false);
+    LOG_FATAL << "EventLoop::abortNotInLoopThread - EventLoop " << this << " was created in threadId_ = " << threadId_ << ", current thread id = " << CurrentThread::tid();
 }
